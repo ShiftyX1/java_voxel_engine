@@ -17,7 +17,7 @@ public class Main {
     
     private long window;
     private Camera camera;
-    private Renderer gameRenderer; // переименовали renderer в gameRenderer
+    private Renderer gameRenderer; // переименовал renderer в gameRenderer
     private TextureAtlas textureAtlas;
     private Block dirtBlock;
     
@@ -46,13 +46,13 @@ public class Main {
     }
 
     private void init() throws Exception {
-        System.out.println("Initializing...");
+        System.out.println("\n=== Starting Engine Initialization ===");
         
+        // GLFW initialization
         GLFWErrorCallback.createPrint(System.err).set();
-
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
-        }
+        }    
 
         System.out.println("GLFW initialized");
 
@@ -125,36 +125,41 @@ public class Main {
 
         System.out.println("Creating OpenGL context...");
         GL.createCapabilities();
-        System.out.println("OpenGL context created");
-
-        // Выводим информацию об OpenGL
-        System.out.println("OpenGL Version: " + glGetString(GL_VERSION));
-        System.out.println("OpenGL Vendor: " + glGetString(GL_VENDOR));
-        System.out.println("OpenGL Renderer: " + glGetString(GL_RENDERER));
-
+        System.out.println("\nOpenGL Info:");
+        System.out.println("Vendor: " + glGetString(GL_VENDOR));
+        System.out.println("Version: " + glGetString(GL_VERSION));
+        System.out.println("Renderer: " + glGetString(GL_RENDERER));
+        
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
         glCullFace(GL_BACK);
-
-        System.out.println("Initializing game components...");
         
+        System.out.println("\n=== Initializing Components ===");
+        
+        System.out.println("\nInitializing Camera...");
         camera = new Camera();
-        System.out.println("Camera initialized");
         
+        System.out.println("\nInitializing Renderer...");
         gameRenderer = new Renderer();
         gameRenderer.setCamera(camera);
         gameRenderer.init();
-        System.out.println("Renderer initialized");
         
+        System.out.println("\nInitializing TextureAtlas...");
         textureAtlas = new TextureAtlas();
         textureAtlas.init();
-        System.out.println("TextureAtlas initialized");
         
+        int boundTexture = glGetInteger(GL_TEXTURE_BINDING_2D);
+        System.out.println("Current bound texture after initialization: " + boundTexture);
+        if (boundTexture == 0) {
+            System.err.println("Warning: No texture bound after initialization!");
+        }
+        
+        System.out.println("\nInitializing Blocks...");
         dirtBlock = new Block(BlockType.DIRT);
-        System.out.println("Block initialized");
         
-        System.out.println("Initialization completed");
+        System.out.println("\n=== Initialization Complete ===\n");
     }
+    
 
     private void updatePosition() {
         if (camera != null) {

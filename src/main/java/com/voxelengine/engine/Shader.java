@@ -116,7 +116,6 @@ public class Shader {
         createUniform("projectionMatrix");
         createUniform("viewMatrix");
         createUniform("textureSampler");
-        // По умолчанию используем текстурный юнит 0
         bind();
         setUniform("textureSampler", 0);
         unbind();

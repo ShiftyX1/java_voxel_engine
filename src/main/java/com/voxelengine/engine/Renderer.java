@@ -20,48 +20,52 @@ public class Renderer {
         shader.link();
         shader.createUniforms();
         
-        // Create the VAO
         vaoId = glGenVertexArrays();
         glBindVertexArray(vaoId);
         
-        // Create the VBO
         vboId = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vboId);
         
-        // Position attribute
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 5 * Float.BYTES, 0);
         glEnableVertexAttribArray(0);
         
-        // Texture attribute
         glVertexAttribPointer(1, 2, GL_FLOAT, false, 5 * Float.BYTES, 3 * Float.BYTES);
         glEnableVertexAttribArray(1);
         
-        // Unbind VAO
         glBindVertexArray(0);
     }
     
     public void render(Block block, float x, float y, float z) {
         shader.bind();
         
-        // Update view and projection matrices
+        // Обновляем матрицы
         camera.updateViewMatrix();
         shader.setUniform("viewMatrix", camera.getViewMatrix());
         shader.setUniform("projectionMatrix", camera.getProjectionMatrix());
         
+        int currentProgram = glGetInteger(GL_CURRENT_PROGRAM);
+        int currentTexture = glGetInteger(GL_TEXTURE_BINDING_2D);
+        
+        if (x == 0 && y == 0 && z == 0) {
+            System.out.println("\nRendering debug info:");
+            System.out.println("Current shader program: " + currentProgram);
+            System.out.println("Current texture: " + currentTexture);
+            
+            int textureSamplerLocation = glGetUniformLocation(currentProgram, "textureSampler");
+            System.out.println("textureSampler location: " + textureSamplerLocation);
+            
+            float[] vertices = block.generateVertices(x, y, z);
+            System.out.println("Vertex data for first triangle:");
+            for(int i = 0; i < 15; i += 5) {
+                System.out.printf("V%d: pos(%.2f, %.2f, %.2f) tex(%.2f, %.2f)\n",
+                    i/5, vertices[i], vertices[i+1], vertices[i+2], 
+                    vertices[i+3], vertices[i+4]);
+            }
+        }
+        
         glBindVertexArray(vaoId);
         
         float[] vertices = block.generateVertices(x, y, z);
-        
-        // Debug output for vertices
-        if (x == 0 && y == 0 && z == 0) {
-            System.out.println("Rendering block at (0,0,0)");
-            System.out.println("Number of vertices: " + vertices.length / 5);
-            System.out.println("First vertex position: (" + 
-                vertices[0] + ", " + vertices[1] + ", " + vertices[2] + ")");
-            System.out.println("First vertex texture coords: (" + 
-                vertices[3] + ", " + vertices[4] + ")");
-        }
-        
         FloatBuffer verticesBuffer = MemoryUtil.memAllocFloat(vertices.length);
         verticesBuffer.put(vertices).flip();
         

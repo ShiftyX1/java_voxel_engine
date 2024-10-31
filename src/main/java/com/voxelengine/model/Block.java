@@ -7,17 +7,36 @@ public class Block {
     
     public Block(BlockType type) {
         this.type = type;
-        this.textureCoords = new TextureCoords[6]; // 6 сторон
+        this.textureCoords = new TextureCoords[6];
         initializeTextureCoords();
     }
     
     private void initializeTextureCoords() {
-        if (type == BlockType.DIRT) {
-            // Все стороны блока земли используют одну и ту же текстуру
-            TextureCoords dirtTexture = new TextureCoords(2, 0);
-            for (int i = 0; i < 6; i++) {
-                textureCoords[i] = dirtTexture;
-            }
+        switch (type) {
+            case DIRT:
+                // Текстура земли находится в позиции (0,0)
+                TextureCoords dirtTexture = new TextureCoords(0, 0);
+                // Применяем одинаковую текстуру для всех граней
+                for (int i = 0; i < 6; i++) {
+                    textureCoords[i] = dirtTexture;
+                }
+                break;
+                
+            case STONE:
+                // Булыжник находится в позиции (1,0)
+                TextureCoords stoneTexture = new TextureCoords(1, 0);
+                for (int i = 0; i < 6; i++) {
+                    textureCoords[i] = stoneTexture;
+                }
+                break;
+                
+            default:
+                // Для неизвестных типов используем текстуру земли
+                TextureCoords defaultTexture = new TextureCoords(0, 0);
+                for (int i = 0; i < 6; i++) {
+                    textureCoords[i] = defaultTexture;
+                }
+                break;
         }
     }
     
@@ -32,102 +51,96 @@ public class Block {
         
         // Верхняя грань (Y+)
         offset = addFace(vertices, offset,
-                x, y + BLOCK_SIZE, z + BLOCK_SIZE,           // v1
-                x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE,  // v2
-                x + BLOCK_SIZE, y + BLOCK_SIZE, z,              // v3
-                x, y + BLOCK_SIZE, z,                       // v4
-                textureCoords[0]);
-                
+            x, y + BLOCK_SIZE, z,              // V0
+            x, y + BLOCK_SIZE, z + BLOCK_SIZE,     // V1
+            x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE, // V2
+            x + BLOCK_SIZE, y + BLOCK_SIZE, z,     // V3
+            textureCoords[0]);
+        
         // Нижняя грань (Y-)
         offset = addFace(vertices, offset,
-                x, y, z,                       // v1
-                x + BLOCK_SIZE, y, z,              // v2
-                x + BLOCK_SIZE, y, z + BLOCK_SIZE,     // v3
-                x, y, z + BLOCK_SIZE,              // v4
-                textureCoords[1]);
-                
+            x, y, z + BLOCK_SIZE,              // V0
+            x, y, z,                       // V1
+            x + BLOCK_SIZE, y, z,              // V2
+            x + BLOCK_SIZE, y, z + BLOCK_SIZE,     // V3
+            textureCoords[1]);
+        
         // Передняя грань (Z+)
         offset = addFace(vertices, offset,
-                x, y, z + BLOCK_SIZE,              // v1
-                x + BLOCK_SIZE, y, z + BLOCK_SIZE,     // v2
-                x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE, // v3
-                x, y + BLOCK_SIZE, z + BLOCK_SIZE,     // v4
-                textureCoords[2]);
-                
-        // Правая грань (X+)
-        offset = addFace(vertices, offset,
-                x + BLOCK_SIZE, y, z + BLOCK_SIZE,     // v1
-                x + BLOCK_SIZE, y, z,              // v2
-                x + BLOCK_SIZE, y + BLOCK_SIZE, z,     // v3
-                x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE, // v4
-                textureCoords[3]);
-                
+            x, y, z + BLOCK_SIZE,              // V0
+            x + BLOCK_SIZE, y, z + BLOCK_SIZE,     // V1
+            x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE, // V2
+            x, y + BLOCK_SIZE, z + BLOCK_SIZE,     // V3
+            textureCoords[2]);
+        
         // Задняя грань (Z-)
         offset = addFace(vertices, offset,
-                x + BLOCK_SIZE, y, z,              // v1
-                x, y, z,                       // v2
-                x, y + BLOCK_SIZE, z,              // v3
-                x + BLOCK_SIZE, y + BLOCK_SIZE, z,     // v4
-                textureCoords[4]);
-                
+            x + BLOCK_SIZE, y, z,              // V0
+            x, y, z,                       // V1
+            x, y + BLOCK_SIZE, z,              // V2
+            x + BLOCK_SIZE, y + BLOCK_SIZE, z,     // V3
+            textureCoords[3]);
+        
+        // Правая грань (X+)
+        offset = addFace(vertices, offset,
+            x + BLOCK_SIZE, y, z + BLOCK_SIZE,     // V0
+            x + BLOCK_SIZE, y, z,              // V1
+            x + BLOCK_SIZE, y + BLOCK_SIZE, z,     // V2
+            x + BLOCK_SIZE, y + BLOCK_SIZE, z + BLOCK_SIZE, // V3
+            textureCoords[4]);
+        
         // Левая грань (X-)
         offset = addFace(vertices, offset,
-                x, y, z,                       // v1
-                x, y, z + BLOCK_SIZE,              // v2
-                x, y + BLOCK_SIZE, z + BLOCK_SIZE,     // v3
-                x, y + BLOCK_SIZE, z,              // v4
-                textureCoords[5]);
-                
+            x, y, z,                       // V0
+            x, y, z + BLOCK_SIZE,              // V1
+            x, y + BLOCK_SIZE, z + BLOCK_SIZE,     // V2
+            x, y + BLOCK_SIZE, z,              // V3
+            textureCoords[5]);
+        
         return vertices;
     }
     
     private int addFace(float[] vertices, int offset,
-                       float x1, float y1, float z1,
-                       float x2, float y2, float z2,
-                       float x3, float y3, float z3,
-                       float x4, float y4, float z4,
+                       float x0, float y0, float z0,  // V0
+                       float x1, float y1, float z1,  // V1
+                       float x2, float y2, float z2,  // V2
+                       float x3, float y3, float z3,  // V3
                        TextureCoords texCoords) {
-        // Первый треугольник (v1, v2, v3)
-        // v1
-        vertices[offset++] = x1;
-        vertices[offset++] = y1;
-        vertices[offset++] = z1;
+        // Первый треугольник (V0, V1, V2)
+        vertices[offset++] = x0;
+        vertices[offset++] = y0;
+        vertices[offset++] = z0;
         vertices[offset++] = texCoords.getU1();
         vertices[offset++] = texCoords.getV1();
         
-        // v2
+        vertices[offset++] = x1;
+        vertices[offset++] = y1;
+        vertices[offset++] = z1;
+        vertices[offset++] = texCoords.getU2();
+        vertices[offset++] = texCoords.getV1();
+        
         vertices[offset++] = x2;
         vertices[offset++] = y2;
         vertices[offset++] = z2;
         vertices[offset++] = texCoords.getU2();
-        vertices[offset++] = texCoords.getV1();
-        
-        // v3
-        vertices[offset++] = x3;
-        vertices[offset++] = y3;
-        vertices[offset++] = z3;
-        vertices[offset++] = texCoords.getU2();
         vertices[offset++] = texCoords.getV2();
         
-        // Второй треугольник (v1, v3, v4)
-        // v1
-        vertices[offset++] = x1;
-        vertices[offset++] = y1;
-        vertices[offset++] = z1;
+        // Второй треугольник (V0, V2, V3)
+        vertices[offset++] = x0;
+        vertices[offset++] = y0;
+        vertices[offset++] = z0;
         vertices[offset++] = texCoords.getU1();
         vertices[offset++] = texCoords.getV1();
         
-        // v3
-        vertices[offset++] = x3;
-        vertices[offset++] = y3;
-        vertices[offset++] = z3;
+        vertices[offset++] = x2;
+        vertices[offset++] = y2;
+        vertices[offset++] = z2;
         vertices[offset++] = texCoords.getU2();
         vertices[offset++] = texCoords.getV2();
         
-        // v4
-        vertices[offset++] = x4;
-        vertices[offset++] = y4;
-        vertices[offset++] = z4;
+        vertices[offset++] = x3;
+        vertices[offset++] = y3;
+        vertices[offset++] = z3;
         vertices[offset++] = texCoords.getU1();
         vertices[offset++] = texCoords.getV2();
         

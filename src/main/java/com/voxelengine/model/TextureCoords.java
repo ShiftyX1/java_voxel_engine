@@ -4,20 +4,21 @@ public class TextureCoords {
     // Размер текстуры блока в пикселях
     private static final float TEXTURE_SIZE = 16.0f;
     // Размер атласа в пикселях
-    private static final float ATLAS_WIDTH = 64.0f;
-    private static final float ATLAS_HEIGHT = 48.0f;
+    private static final float ATLAS_SIZE = 256.0f;
     
     private final float u1, v1, u2, v2;
     
     public TextureCoords(int x, int y) {
-        // x и y - позиции текстуры в атласе (в блоках 16x16)
-        this.u1 = (x * TEXTURE_SIZE) / ATLAS_WIDTH;
-        this.v1 = (y * TEXTURE_SIZE) / ATLAS_HEIGHT;
-        this.u2 = ((x + 1) * TEXTURE_SIZE) / ATLAS_WIDTH;
-        this.v2 = ((y + 1) * TEXTURE_SIZE) / ATLAS_HEIGHT;
+        float epsilon = 0.001f;
         
-        System.out.println(String.format("Created texture coords for block (%d,%d): u1=%.3f, v1=%.3f, u2=%.3f, v2=%.3f",
-            x, y, u1, v1, u2, v2));
+        // Вычисляем нормализованные координаты текстуры
+        this.u1 = (x * TEXTURE_SIZE + epsilon) / ATLAS_SIZE;
+        this.v1 = (y * TEXTURE_SIZE + epsilon) / ATLAS_SIZE;
+        this.u2 = ((x + 1) * TEXTURE_SIZE - epsilon) / ATLAS_SIZE;
+        this.v2 = ((y + 1) * TEXTURE_SIZE - epsilon) / ATLAS_SIZE;
+        
+        System.out.printf("Created texture coords for block at (%d,%d):%n", x, y);
+        System.out.printf("u1=%.4f, v1=%.4f, u2=%.4f, v2=%.4f%n", u1, v1, u2, v2);
     }
     
     public float getU1() { return u1; }

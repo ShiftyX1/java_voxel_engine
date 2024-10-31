@@ -11,9 +11,9 @@ public class Camera {
     private final Matrix4f projectionMatrix;
     
     public Camera() {
-        position = new Vector3f(8.0f, 10.0f, 20.0f); // Позиция камеры над плато
-        pitch = (float) Math.toRadians(-45.0f);  // Наклон камеры вниз
-        yaw = (float) Math.toRadians(-90.0f);   // Поворот камеры к центру плато
+        position = new Vector3f(8.0f, 10.0f, 20.0f);
+        pitch = (float) Math.toRadians(-45.0f);
+        yaw = (float) Math.toRadians(-90.0f);
         viewMatrix = new Matrix4f();
         projectionMatrix = new Matrix4f();
         updateProjectionMatrix(70.0f, 800.0f/600.0f);
