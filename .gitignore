@@ -1,3 +1,6 @@
 .gradle
 build
 structure.txt
+*.log
+terrain.psd
+terrain.svg
